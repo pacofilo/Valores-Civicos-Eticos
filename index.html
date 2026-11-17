@@ -189,6 +189,40 @@ border-radius: 6px; width: fit-content; margin-top: 2px;
 .logo-text { position: static; transform: none; font-size: 18px; order: 3; }
 .back-btn { order: 2; }
 }
+/* ===== APARTADO QUIZZES (copiado de Historia de la Filosofía) ===== */
+a.featured-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+a.featured-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.22); }
+.featured-arrow {
+position: absolute; top: 22px; right: 24px; width: 40px; height: 40px; border-radius: 50%;
+background: rgba(255,255,255,0.18); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+display: flex; align-items: center; justify-content: center; font-size: 19px; z-index: 2; color: #fff;
+}
+.section-divider-img {
+width: 100vw; margin: 56px calc(-50vw + 50%) 40px; height: 46px;
+background-image: url('https://pacofilo.github.io/Historia-de-la-filosofia-indice/images/section-divider-strip.jpg');
+background-size: 100% 100%; background-repeat: no-repeat; background-position: center; display: block;
+}
+.featured-card--disertaciones { background: linear-gradient(135deg, #E7EFF9 0%, #CFE0F2 100%); }
+.featured-photo-wrap--text {
+background: linear-gradient(160deg, #F4F8FC 0%, #E2ECF7 100%);
+flex-direction: column; align-items: center; justify-content: center;
+text-align: center; padding: 24px 20px; gap: 14px;
+}
+.featured-title-text {
+font-family: 'Fredoka', 'DM Sans', sans-serif; font-weight: 700; font-style: normal;
+font-size: clamp(34px, 4.2vw, 52px); letter-spacing: -0.01em; line-height: 1; color: #2563A8;
+}
+.featured-subtitle-text {
+font-family: 'Fredoka', 'DM Sans', sans-serif; font-weight: 600;
+font-size: clamp(18px, 2vw, 24px); line-height: 1.1; color: #2563A8; opacity: 0.85; margin-top: -6px;
+}
+.featured-cta {
+font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+color: #2563A8; background: rgba(37, 99, 168, 0.1);
+padding: 8px 18px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px;
+}
+@media (max-width: 760px) { .featured-arrow { top: 16px; right: 16px; } }
+@media (max-width: 640px) { .section-divider-img { height: 30px; margin: 40px calc(-50vw + 50%) 28px; } }
 </style>
 </head>
 <body>
@@ -364,6 +398,25 @@ border-radius: 6px; width: fit-content; margin-top: 2px;
 </div>
 
 </div>
+
+<!-- ===== APARTADO QUIZZES · PRUEBAS TIPO TEST ===== -->
+<div class="section-divider-img" role="presentation" aria-hidden="true"></div>
+
+<a class="featured-card featured-card--disertaciones" href="https://pacofilo.github.io/Historia-de-la-filosofia-indice/quizzes/" target="_blank">
+<div class="featured-photo-wrap featured-photo-wrap--text">
+<span class="featured-title-text">Quizzes</span>
+<span class="featured-subtitle-text">Pruebas tipo test</span>
+<span class="featured-cta">👉 Pincha aquí para ir a quizzes</span>
+</div>
+<div class="featured-content">
+<video class="featured-content-video" autoplay muted loop playsinline preload="metadata" aria-label="Quizzes">
+<source src="https://pacofilo.github.io/Historia-de-la-filosofia-indice/videos/quizzes-featured.mp4" type="video/mp4">
+</video>
+<button type="button" class="featured-mute-btn" aria-label="Activar sonido" onclick="event.preventDefault(); event.stopPropagation(); toggleSound(this);">🔇</button>
+<button type="button" class="featured-fullscreen-btn" aria-label="Ver a pantalla completa" onclick="event.preventDefault(); event.stopPropagation(); toggleFullscreen(this);">⛶</button>
+</div>
+<div class="featured-arrow">→</div>
+</a>
 
 </main>
 
