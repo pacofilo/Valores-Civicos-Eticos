@@ -34,6 +34,7 @@
 .feedback.fb-blank{background:var(--surface2);border-left:3px solid var(--text-muted)}.review-item.rev-blank{border-left-color:var(--text-muted)}
 .option-btn.selected{border-color:var(--accent2);background:rgba(212,165,116,.18);opacity:1}.option-btn.selected .letter{background:var(--accent2);color:#fff}
 .formula{font-size:.8rem;color:var(--text-muted);margin-top:.4rem}
+.blank-btn.selected{border-style:solid;border-color:var(--text-muted);color:var(--text);background:var(--surface2)}
 </style>
 </head>
 <body>
@@ -127,7 +128,7 @@ const Q=[
 function gR(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}}
 function sR(e){try{const r=gR();r.push(e);localStorage.setItem(STORAGE_KEY,JSON.stringify(r))}catch{}}
 
-let stu={name:'',email:'',curso:''},qs=[],cur=0,ok=0,ko=0,bl=0,lg=[];
+let stu={name:'',email:'',curso:''},qs=[],cur=0,ok=0,ko=0,bl=0,lg=[],sel=null;
 const ct=document.getElementById('content');
 function sh(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function esc(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
@@ -139,7 +140,7 @@ function buildExam(){
 function totalPreg(){return Q.length}
 
 function showLogin(m){m=m||'alumno';
-const rules=m==='alumno'?`<div class="rules"><strong>Normas del examen</strong><ul><li>${totalPreg()} preguntas: ${Q.filter(q=>q.u===1).length} de la Unidad 1 y ${Q.filter(q=>q.u===2).length} de la Unidad 2.</li><li>Cada pregunta tiene <b>4 opciones</b> y solo <b>una</b> es correcta.</li><li><b>Cada 3 respuestas erróneas se resta 1 acierto.</b></li><li>Si no estás seguro/a, puedes <b>dejar la pregunta en blanco</b>: no resta.</li><li>Una vez respondida, no se puede cambiar la respuesta.</li><li>No verás si aciertas o fallas hasta <b>terminar el examen</b>.</li></ul></div>`:'';
+const rules=m==='alumno'?`<div class="rules"><strong>Normas del examen</strong><ul><li>${totalPreg()} preguntas: ${Q.filter(q=>q.u===1).length} de la Unidad 1 y ${Q.filter(q=>q.u===2).length} de la Unidad 2.</li><li>Cada pregunta tiene <b>4 opciones</b> y solo <b>una</b> es correcta.</li><li><b>Cada 3 respuestas erróneas se resta 1 acierto.</b></li><li>Si no estás seguro/a, puedes <b>dejar la pregunta en blanco</b>: no resta.</li><li>Puedes <b>cambiar tu respuesta</b> mientras no pulses <b>«Siguiente»</b>; al pulsarlo queda registrada y ya no se puede cambiar.</li><li>No verás si aciertas o fallas hasta <b>terminar el examen</b>.</li></ul></div>`:'';
 ct.innerHTML=`<div class="login-screen"><h2>${m==='alumno'?'Identificación del alumno/a':'Acceso del profesor'}</h2><p>${m==='alumno'?'Introduce tus datos para comenzar.':'Introduce la contraseña.'}</p>${rules}<div class="login-box"><div class="login-toggle"><button class="toggle-btn ${m==='alumno'?'active':''}" onclick="showLogin('alumno')">Alumno/a</button><button class="toggle-btn ${m==='profesor'?'active':''}" onclick="showLogin('profesor')">Profesor</button></div><div id="lf">${m==='alumno'?sF():tF()}</div></div></div>`;const f=document.querySelector('#lf input');if(f)setTimeout(()=>f.focus(),80)}
 
 function sF(){return`<div class="field"><label>Nombre completo</label><input type="text" id="in" placeholder="Ej: María López García"><div class="error-msg" id="en">Introduce tu nombre</div></div><div class="field"><label>Correo corporativo</label><input type="email" id="ie" placeholder="tucorreo@murciaeduca.es"><div class="hint">@murciaeduca.es · @alu.murciaeduca.es · @alu365.murciaeduca.es</div><div class="error-msg" id="ee">Correo no válido</div></div><div class="field"><label>Curso actual</label><select id="ic"><option value="">— Selecciona —</option><option>3º ESO</option><option>4º ESO</option><option>1º Bachillerato</option></select><div class="error-msg" id="ec">Selecciona curso</div></div><div class="field"><label>Contraseña del examen</label><input type="password" id="ix" placeholder="La que te dé el profesor"><div class="error-msg" id="ex">Contraseña incorrecta</div></div><button class="login-btn" onclick="doSL()">Comenzar el examen →</button>`}
@@ -157,16 +158,18 @@ function doTL(){document.getElementById('ip').value.trim().toLowerCase()===TEACH
 function net(){return Math.max(0,ok-Math.floor(ko/ERRORES_POR_PENALIZACION))}
 
 function showQ(){
-if(cur>=qs.length){finish();return}const q=qs[cur],pct=(cur/qs.length*100).toFixed(0);
+sel=null;if(cur>=qs.length){finish();return}const q=qs[cur],pct=(cur/qs.length*100).toFixed(0);
 const bd=`<div class="options">${q.o.map((o,i)=>`<button class="option-btn" onclick="aT(${i})"><span class="letter">${'ABCD'[i]}</span><span>${esc(o)}</span></button>`).join('')}</div><button class="blank-btn" id="bb" onclick="aT(-1)">Dejar en blanco (no resta)</button>`;
 ct.innerHTML=`<div class="student-tag"><span class="dot"></span>${esc(stu.name)} · ${esc(stu.curso)}</div><div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div><div class="progress-info"><span>Pregunta ${cur+1}/${qs.length}</span><span>Respondidas: ${ok+ko} · En blanco: ${bl}</span></div><div class="question-card"><span class="q-type u${q.u}">Unidad ${q.u}</span><div class="q-text">${esc(q.q)}</div>${bd}<div id="fb"></div><button class="next-btn" id="nb" onclick="nQ()">Siguiente →</button></div>`}
 
-function aT(i){const q=qs[cur],bs=document.querySelectorAll('.option-btn');bs.forEach(b=>{b.classList.add('disabled');b.onclick=null});document.getElementById('bb').style.display='none';
-let st;if(i<0){bl++;st='blank'}else{bs[i].classList.add('selected');if(i===q.c){ok++;st='ok'}else{ko++;st='ko'}}
+// Selección provisional: el alumno puede cambiar de opción (o dejarla en blanco) hasta pulsar «Siguiente»
+function aT(i){sel=i;document.querySelectorAll('.option-btn').forEach((b,j)=>b.classList.toggle('selected',j===i));document.getElementById('bb').classList.toggle('selected',i<0);
+document.getElementById('fb').innerHTML=`<div class="feedback fb-blank"><strong>${i<0?'Has elegido dejarla en blanco':'Respuesta seleccionada: '+'ABCD'[i]}</strong>Puedes cambiarla mientras no pulses «Siguiente». Al pulsarlo quedará registrada y ya no podrás cambiarla.</div>`;document.getElementById('nb').style.display='block'}
+// Al pulsar «Siguiente» la respuesta queda registrada definitivamente
+function nQ(){if(sel===null)return;const q=qs[cur],i=sel;let st;
+if(i<0){bl++;st='blank'}else if(i===q.c){ok++;st='ok'}else{ko++;st='ko'}
 lg.push({n:Q.findIndex(z=>z.q===q.q)+1,l:i<0?'':'ABCD'[i],xl:'ABCD'[q.c],q:q.q,u:q.u,st,g:i<0?'En blanco':q.o[i],x:q.o[q.c],e:q.e});
-// La corrección no se muestra hasta el final del examen
-document.getElementById('fb').innerHTML=`<div class="feedback fb-blank"><strong>${st==='blank'?'Pregunta dejada en blanco':'Respuesta registrada'}</strong>Verás la corrección al terminar el examen.</div>`;document.getElementById('nb').style.display='block'}
-function nQ(){cur++;showQ()}
+cur++;showQ()}
 
 // Respuestas del alumno para la columna M (por si hay reclamaciones). Formato: P1: B ✓ | P2: A ✗ (correcta: C) | P3: en blanco
 function respTxt(){return lg.slice().sort((a,b)=>a.n-b.n).map(r=>r.st==='blank'?`P${r.n}: en blanco`:r.st==='ok'?`P${r.n}: ${r.l} ✓`:`P${r.n}: ${r.l} ✗ (correcta: ${r.xl})`).join(' | ')}
