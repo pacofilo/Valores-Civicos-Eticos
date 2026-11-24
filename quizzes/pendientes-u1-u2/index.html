@@ -163,14 +163,16 @@ ct.innerHTML=`<div class="student-tag"><span class="dot"></span>${esc(stu.name)}
 
 function aT(i){const q=qs[cur],bs=document.querySelectorAll('.option-btn');bs.forEach(b=>{b.classList.add('disabled');b.onclick=null});document.getElementById('bb').style.display='none';
 let st;if(i<0){bl++;st='blank'}else{bs[i].classList.add('selected');if(i===q.c){ok++;st='ok'}else{ko++;st='ko'}}
-lg.push({q:q.q,u:q.u,st,g:i<0?'En blanco':q.o[i],x:q.o[q.c],e:q.e});
+lg.push({n:Q.findIndex(z=>z.q===q.q)+1,l:i<0?'':'ABCD'[i],xl:'ABCD'[q.c],q:q.q,u:q.u,st,g:i<0?'En blanco':q.o[i],x:q.o[q.c],e:q.e});
 // La corrección no se muestra hasta el final del examen
 document.getElementById('fb').innerHTML=`<div class="feedback fb-blank"><strong>${st==='blank'?'Pregunta dejada en blanco':'Respuesta registrada'}</strong>Verás la corrección al terminar el examen.</div>`;document.getElementById('nb').style.display='block'}
 function nQ(){cur++;showQ()}
 
+// Respuestas del alumno para la columna M (por si hay reclamaciones). Formato: P1: B ✓ | P2: A ✗ (correcta: C) | P3: en blanco
+function respTxt(){return lg.slice().sort((a,b)=>a.n-b.n).map(r=>r.st==='blank'?`P${r.n}: en blanco`:r.st==='ok'?`P${r.n}: ${r.l} ✓`:`P${r.n}: ${r.l} ✗ (correcta: ${r.xl})`).join(' | ')}
 async function sendGS(entry){
 if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL.includes('PEGA_AQUI'))return'no-url';
-try{await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({fecha:entry.date,nombre:entry.name,curso:entry.curso,correo:entry.email,nota:entry.nota,aciertos:entry.ok,total:entry.tp,porcentaje:entry.pct,errores:entry.ko,blanco:entry.bl,netos:entry.net,examen:NOMBRE_EXAMEN})});return'ok'}catch{return'error'}}
+try{await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({fecha:entry.date,nombre:entry.name,curso:entry.curso,correo:entry.email,nota:entry.nota,aciertos:entry.ok,total:entry.tp,porcentaje:entry.pct,errores:entry.ko,blanco:entry.bl,netos:entry.net,examen:NOMBRE_EXAMEN,respuestas:respTxt()})});return'ok'}catch{return'error'}}
 
 async function finish(){
 const tp=qs.length,n=net(),nota=(n/tp*10).toFixed(2),pct=Math.round(n/tp*100),pen=Math.floor(ko/ERRORES_POR_PENALIZACION),now=new Date(),ds=now.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
